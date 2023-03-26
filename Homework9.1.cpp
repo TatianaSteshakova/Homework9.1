@@ -1,40 +1,59 @@
 ﻿#include <iostream>
-#include <format>
+#include "iomanip"
 using namespace std;
 
 int main() {
-    // Ввод данных
     setlocale(0, "rus");
-    double initial_sum, credit_sum, interest_rate;
-    cout << "Введите начальную сумму: ";
-    cin >> initial_sum;
-    cout << "Введите сумму кредита: ";
-    cin >> credit_sum;
-    cout << "Введите процентную ставку: ";
-    cin >> interest_rate;
+    double start, credit, percent;
+    cout << "Введите начальную сумму:" << endl;
+    cin >> start;
+    cout << "Введите сумму кредита: " << endl;
+    cin >> credit;
+    cout << "Введите процентную ставку: " << endl;
+    cin >> percent;
 
-    // Расчет ежемесячного платежа
-    double monthly_interest_rate = interest_rate / 12 / 100;
-    double payment = (credit_sum * monthly_interest_rate) / (1 - 1 / pow(1 + monthly_interest_rate, initial_sum));
+    cout << "Срок кредита: 5 лет" << endl;
 
-    cout << "Месячная ставка: " << monthly_interest_rate << endl;
-    cout << "Плата в месяц: " << payment << endl;
+    double remaining = credit - start;
 
-    // Построение таблицы
-    cout << "Месяц\tПлатеж\tОстаток\tПроценты" << endl;
-    double remaining = credit_sum - initial_sum;
-    int m = 0;
+    double month_percent = percent / 100 / 12;
+
+    double payment = (remaining * month_percent) / (1 - pow(1 + month_percent, 1 - 60));
+
+    bool dos = false;
+    double dospay = 0, dosm = 0;
+    cout << "Хотите ввести досрочный платеж? 1 - да, 0 - нет" << endl;
+    cin >> dos;
+    if (dos)
+    {
+        cout << "Введите сумму и месяц досрочного платежа: " << endl;
+        cin >> dospay >> dosm;
+    }
+
+    cout << "Месяц \t Платеж \t Остаток \t Проценты" << endl;
+    int i = 0;
     while (remaining > 0)
     {
-        double percent = remaining * monthly_interest_rate;
-        remaining = remaining + percent;
-        if (payment > remaining)
+        i++;
+
+        double procent_sum = remaining * month_percent;
+        remaining = remaining + procent_sum;
+        if(dosm == i && dos)
+        {
+            cout << endl;
+            cout << "Проведение досрочного платежа на сумму " << dospay << " руб." << endl << endl;
+            remaining = remaining - dospay;
+        }
+        if (remaining < payment)
         {
             payment = remaining;
         }
         remaining -= payment;
-        m++;
-        cout << m << "\t" << payment << "\t" << (int)remaining << "\t" << percent << endl;
+
+        // Библиотека iomanip
+        // setprecision - количество знаков после запятой
+        // fixed - вывод без экспоненты
+        cout << setprecision(2) << fixed << i << "\t" << payment << "\t" << remaining << "\t" << procent_sum << endl;
     }
 
     return 0;
